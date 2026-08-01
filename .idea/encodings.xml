@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/IW-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-article-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-article-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-comment-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-comment-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-file-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-file-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-gateway-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-gateway-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-mq-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-mq-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-search-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-search-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-user-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/IW-user-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

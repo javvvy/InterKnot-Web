@@ -1,0 +1,23 @@
+package top.hzwhzw.iwarticleservice.configuration;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.hzwhzw.iwarticleservice.interceptor.UserContextInterceptor;
+
+@Configuration
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer {
+    private final UserContextInterceptor userContextInterceptor;
+
+
+    /**
+     * 注册拦截器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(userContextInterceptor).addPathPatterns("/**");
+    }
+}

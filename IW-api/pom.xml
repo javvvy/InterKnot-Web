@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.hzwhzw</groupId>
+        <artifactId>Interknot-Web</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>IW-api</artifactId>
+    <name>IW-api</name>
+    <description>IW-api</description>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+    <dependencies>
+        <!-- Spring Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- Spring Boot测试 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Spring Cloud OpenFeign -->
+        <!-- ============ OpenFeign 核心依赖 ============ -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- ============ Sentinel 熔断支持 ============ -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+<!--        &lt;!&ndash; ============ HttpClient5 支持（解决 HttpClient5 报错） ============ &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.httpcomponents.client5</groupId>-->
+<!--            <artifactId>httpclient5</artifactId>-->
+<!--            &lt;!&ndash; 版本号可以参考最新的稳定版，如 5.2.3 或 5.3 &ndash;&gt;-->
+<!--            <version>5.2.3</version>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash; 2. 引入 Feign 对 HttpClient 5 的支持 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>io.github.openfeign</groupId>-->
+<!--            <artifactId>feign-hc5</artifactId>-->
+<!--            &lt;!&ndash; 此版本号通常与您的 Spring Cloud 版本对应，如 13.x 或 12.x 系列 &ndash;&gt;-->
+<!--            <version>13.1</version>-->
+<!--        </dependency>-->
+
+        <!-- ============ 连接池支持 ============ -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+
+        <!-- nacos注册发现 -->
+
+        <dependency>
+
+            <groupId>
+                com.alibaba.cloud
+            </groupId>
+
+            <artifactId>
+                spring-cloud-starter-alibaba-nacos-discovery
+            </artifactId>
+
+        </dependency>
+
+        <!-- nacos配置中心 -->
+
+        <dependency>
+
+            <groupId>
+                com.alibaba.cloud
+            </groupId>
+
+            <artifactId>
+                spring-cloud-starter-alibaba-nacos-config
+            </artifactId>
+
+        </dependency>
+
+        <!-- ============ Bootstrap 核心依赖 ============ -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+    </dependencies>
+
+
+</project>

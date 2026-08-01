@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-api/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-common/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-article-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-comment-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-file-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-mq-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-search-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-user-service/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_18" default="true" project-jdk-name="corretto-18" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>
