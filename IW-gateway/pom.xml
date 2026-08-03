@@ -35,7 +35,11 @@
 <!--            <artifactId>mysql-connector-j</artifactId>-->
 <!--            <scope>runtime</scope>-->
 <!--        </dependency>-->
-
+        <!-- loadbalancer -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
         <dependency>
             <groupId>top.hzwhzw</groupId>
             <artifactId>IW-common</artifactId>

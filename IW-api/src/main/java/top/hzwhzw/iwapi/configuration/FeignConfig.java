@@ -33,17 +33,16 @@ public class FeignConfig {
      * 配置请求拦截器（统一添加Header）
      */
 
-    //TODO 配置请求拦截器（统一添加Header）
-    @Bean
-    public RequestInterceptor requestInterceptor() {
-        return requestTemplate -> {
-            // 添加统一Header
-            requestTemplate.header("X-Trace-Id", MDC.get("traceId"));
-            requestTemplate.header("X-Request-Source", "api-service");
-
-            // 如果需要动态获取Token，可以在这里添加
-            // String token = getTokenFromContext();
-            // requestTemplate.header("Authorization", "Bearer " + token);
-        };
-    }
+//    @Bean
+//    public RequestInterceptor requestInterceptor() {
+//        return requestTemplate -> {
+//            // 添加统一Header
+//            requestTemplate.header("X-Request-Id", MDC.get("requestId"));
+//            requestTemplate.header("X-Request-Source", MDC.get("source"));
+//
+//            // 如果需要动态获取Token，可以在这里添加
+//            // String token = getTokenFromContext();
+//            // requestTemplate.header("Authorization", "Bearer " + token);
+//        };
+//    }
 }

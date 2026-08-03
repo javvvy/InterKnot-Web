@@ -1,6 +1,9 @@
 package top.hzwhzw.iwarticleservice.pojo;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,19 +14,20 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName("article")
 public class Article {
-    private Integer id;
-    private String documentId;
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    private String articleNo;
     private String title;
     private String body;
-    private String text;
+    private String textHtml;
     private String rawBodyText;
-    private long views;
-    private long likesCount;
-    private long commentsCount;
-    private Integer isRead;
+    private Long views;
+    private Long likesCount;
+    private Long commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String authorDocumentId;
     private Long authorId;
 }

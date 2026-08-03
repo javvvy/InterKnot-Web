@@ -15,7 +15,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
         String userRole = request.getHeader("X-User-Role");
 
         if (userId != null) {
-            UserContextHolder.setUserId(userId);
+            UserContextHolder.setUserId(Long.parseLong(userId));
         }
         if (userRole != null) {
             UserContextHolder.setUserRole(userRole);

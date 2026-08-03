@@ -32,7 +32,7 @@ public class JwtUtils {
             Integer id = Integer.valueOf(claims.get("id").toString());
             return id.toString();
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException("token解析失败,获取用户ID失败", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class JwtUtils {
             Map<String, Object> claims = JwtUtils.parseJwt(token);
             return claims.get("role").toString();
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException("token解析失败,获取角色失败", e);
         }
     }
 }

@@ -12,19 +12,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ArticleVO {
-    private Integer id;
-    private String documentId;
+    private Long id;
+    private String articleNo;
     private String title;
     private String body;
-    private String text;
+    private String textHtml;
     private String rawBodyText;
     private List< CoverVO> covers;
-    private long views;
-    private long likesCount;
-    private long commentsCount;
-    private Integer isRead;
+    private Long views;
+    private Long likesCount;
+    private Long commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String authorDocumentId;
     private UserVO author;
 }

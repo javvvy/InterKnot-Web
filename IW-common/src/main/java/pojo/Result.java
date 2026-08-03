@@ -24,7 +24,7 @@ public class Result {
         result.msg = "success";
         return result;
     }
-    public static Result success1(String msg){
+    public static Result successMsg(String msg){
         Result result = new Result();
         result.code = "1";
         result.msg = msg;

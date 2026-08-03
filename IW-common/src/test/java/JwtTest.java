@@ -8,12 +8,12 @@ public class JwtTest {
     @Test
     public void testJwt() {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("id", 123);
+        dataMap.put("id", 1);
         dataMap.put("role", "admin");
         String token = JwtUtils.generateJwt(dataMap);
         System.out.println(token);
         Map<String, Object> claims = JwtUtils.parseJwt(token);
         System.out.println(Integer.valueOf(claims.get("id").toString()));
-        System.out.println(claims.get("username"));
+        System.out.println(claims.get("role"));
     }
 }
