@@ -26,7 +26,7 @@ public class DraftController {
     @PutMapping("/{draftNo}")
     public Result update(@PathVariable String draftNo,@RequestBody DraftArticleDTO draftArticle){
         log.info("更新文章草稿{}", draftArticle);
-        DraftArticle updated = draftService.updateDraftArticle(draftNo,draftArticle);
+        DraftArticleVO updated = draftService.updateDraftArticle(draftNo,draftArticle);
         return Result.success(updated);
     }
     //发布文章草稿

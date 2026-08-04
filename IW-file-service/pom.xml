@@ -19,30 +19,11 @@
     </properties>
     <dependencies>
 
-        <!-- ============ OpenFeign 核心依赖 ============ -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <!-- ============ LoadBalancer 核心依赖 ============ -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
         <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
-
-        <!-- MyBatis -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
-        </dependency>
-
 
         <!-- MySQL驱动 -->
         <dependency>
@@ -51,7 +32,6 @@
             <scope>runtime</scope>
         </dependency>
 
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -59,14 +39,12 @@
             <optional>true</optional>
         </dependency>
 
-
         <!-- Spring Boot测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
 
         <!-- MyBatis测试 -->
         <dependency>
@@ -78,84 +56,66 @@
 
         <!-- Sentinel -->
         <dependency>
-
             <groupId>
                 com.alibaba.cloud
             </groupId>
-
             <artifactId>
                 spring-cloud-starter-alibaba-sentinel
             </artifactId>
-
         </dependency>
 
         <!-- Seata -->
         <dependency>
-
             <groupId>
                 com.alibaba.cloud
             </groupId>
-
             <artifactId>
                 spring-cloud-starter-alibaba-seata
             </artifactId>
-
         </dependency>
 
         <!-- RabbitMQ -->
         <dependency>
-
             <groupId>
                 org.springframework.boot
             </groupId>
-
             <artifactId>
                 spring-boot-starter-amqp
             </artifactId>
-
         </dependency>
 
         <!-- web -->
         <dependency>
-
             <groupId>
                 org.springframework.boot
             </groupId>
-
             <artifactId>
                 spring-boot-starter-web
             </artifactId>
-
         </dependency>
 
 
         <!-- nacos注册发现 -->
 
         <dependency>
-
             <groupId>
                 com.alibaba.cloud
             </groupId>
-
             <artifactId>
                 spring-cloud-starter-alibaba-nacos-discovery
             </artifactId>
-
         </dependency>
 
 
         <!-- nacos配置中心 -->
 
         <dependency>
-
             <groupId>
                 com.alibaba.cloud
             </groupId>
-
             <artifactId>
                 spring-cloud-starter-alibaba-nacos-config
             </artifactId>
-
         </dependency>
 
         <!-- mybatis-plus -->
@@ -168,6 +128,36 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.hzwhzw</groupId>
+            <artifactId>IW-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.hzwhzw</groupId>
+            <artifactId>IW-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- ============ OpenFeign 核心依赖 ============ -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- ============ LoadBalancer 核心依赖 ============ -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- ============ Hutool 核心依赖 ============ -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.35</version>
         </dependency>
     </dependencies>
 

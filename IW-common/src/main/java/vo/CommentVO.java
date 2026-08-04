@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -11,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentVO {
     private String commentNo;
-    private List<CommentVO> replies;
     private Long likeCount;
     private String content;
+    private CommentVO lastReply;
     private UserVO author;
-    private Long createTime;
+    private LocalDateTime createdAt;
     private Boolean isLiked;
 }

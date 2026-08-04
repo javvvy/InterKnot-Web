@@ -71,7 +71,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     UserVO user = userMap.get(article.getAuthorId());
                     // 设置封面信息
                     List<Cover> covers = coverMapper.selectList(
-                            new LambdaQueryWrapper<Cover>().eq(Cover::getArticleId, article.getId())
+                            new LambdaQueryWrapper<Cover>().eq(Cover::getArticleNo, article.getArticleNo())
                     );
                     if(covers !=null){
                         List<CoverVO> coverVOList = covers.stream()
@@ -109,7 +109,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         ArticleVO articleVO = new ArticleVO();
         List<Cover> covers = coverMapper.selectList(
-                new LambdaQueryWrapper<Cover>().eq(Cover::getArticleId, article.getId())
+                new LambdaQueryWrapper<Cover>().eq(Cover::getArticleNo, articleNo)
         );
         BeanUtils.copyProperties(article, articleVO);
         if(covers !=null){

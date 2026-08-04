@@ -7,22 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("comment")
-public class Comment {
+@TableName("comment_likes")
+public class CommentLikes {
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private String commentNo;
-    private String articleNo;
-    private String authorNo;
-    private String content;
-    private String lastReply;
-    private String replyTo;
-    private Long likeCount;
-    private LocalDateTime createdAt;
+    private Long userId;
 }

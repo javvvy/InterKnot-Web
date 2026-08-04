@@ -31,19 +31,26 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
             log.debug("放行公开路径: {}", path);
             return chain.filter(exchange);
         }
-
         // 2. 获取并校验Token
         String authHeader = request.getHeaders().getFirst("token");
+
         if (authHeader == null || authHeader.isEmpty()) {
-            log.warn("Token缺失或格式错误，请求路径: {}", path); // 关键：在这里打印日志
-            return unauthorizedResponse(exchange, "Missing or Invalid Token");
+
+            // 可含可不含Token的路径
+            if (path.contains("/comments/list") || path.contains("/comments/replyList")){
+                //  无token
+                log.info("无token，请求路径: {}", path);
+                return chain.filter(exchange);
+            }else {
+                log.warn("Token缺失或格式错误，请求路径: {}", path);
+                return unauthorizedResponse(exchange, "Missing or Invalid Token");
+            }
         }
         String token = authHeader;
         try {
             // 3. 解析JWT
             String userId = JwtUtils.verifyToken(token);
             String role = JwtUtils.getRole(token);
-
             // 4. 将用户信息传递给下游服务
             ServerHttpRequest mutatedRequest = request.mutate()
                     .header("X-User-Id", userId)

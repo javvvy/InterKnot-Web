@@ -2,6 +2,7 @@ package top.hzwhzw.iwarticleservice.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,12 +17,16 @@ import top.hzwhzw.iwarticleservice.mapper.ArticleMapper;
 import top.hzwhzw.iwarticleservice.mapper.CoverMapper;
 import top.hzwhzw.iwarticleservice.mapper.DraftMapper;
 import top.hzwhzw.iwarticleservice.pojo.Article;
+import top.hzwhzw.iwarticleservice.pojo.Cover;
 import top.hzwhzw.iwarticleservice.pojo.DraftArticle;
 import top.hzwhzw.iwarticleservice.service.DraftService;
 import utils.UserContextHolder;
+import vo.CoverVO;
 import vo.DraftArticleVO;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +34,11 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
     private final DraftMapper draftMapper;
     private final UserClient userClient;
     private final ArticleMapper articleMapper;
+    private final CoverMapper coverMapper;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public DraftArticle createDraftArticle(DraftArticleDTO draftArticle) {
+    public DraftArticleVO createDraftArticle(DraftArticleDTO draftArticle) {
         DraftArticle draft = new DraftArticle();
         //插入draftArticle表
         draft.setDraftNo("draft-"+ IdUtil.getSnowflakeNextIdStr());
@@ -47,8 +54,10 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
             throw new IllegalArgumentException("userId不能为空");
         }
         draft.setAuthorId(userId);
+        DraftArticleVO draftVO = new DraftArticleVO();
+        BeanUtils.copyProperties(draft, draftVO);
         save(draft);
-        return draft;
+        return draftVO;
         //TODO cover表另外设计
 //        UserVO user = userClient.queryUserByUserNo(userNo);
 //        if(user != null){
@@ -73,7 +82,7 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
 //        }
     }
     @Override
-    public DraftArticle updateDraftArticle(String draftNo, DraftArticleDTO draftArticle) {
+    public DraftArticleVO updateDraftArticle(String draftNo, DraftArticleDTO draftArticle) {
         DraftArticle draft = new DraftArticle();
         draft.setTitle(draftArticle.getTitle());
         draft.setText(draftArticle.getText());
@@ -84,7 +93,9 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
             log.error("更新文章草稿失败");
             throw new IllegalArgumentException("更新文章草稿失败");
         }
-        return draft;
+        DraftArticleVO draftVO = new DraftArticleVO();
+        BeanUtils.copyProperties(draft, draftVO);
+        return draftVO;
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -107,6 +118,10 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
         articleMapper.insert(article);
+        // 更改cover表中的articleNo
+        coverMapper.update(new LambdaUpdateWrapper<Cover>()
+                        .set(Cover::getArticleNo, article.getArticleNo())
+                        .eq(Cover::getArticleNo, draftNo));
         //删除草稿
         draftMapper.deleteById(draft.getId());
     }
@@ -138,6 +153,15 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
         }
         DraftArticleVO vo = new DraftArticleVO();
         BeanUtils.copyProperties(draft, vo);
+        // 从cover表中查询封面
+        List<Cover> covers = coverMapper.selectList(new LambdaQueryWrapper<Cover>()
+                .eq(Cover::getArticleNo, draftNo));
+        vo.setCovers(covers.stream().map(cover -> CoverVO.builder()
+                .coverNo(cover.getCoverNo())
+                .url(cover.getUrl())
+                .width(cover.getWidth())
+                .height(cover.getHeight())
+                .build()).collect(Collectors.toList()));
         return vo;
     }
     @Override

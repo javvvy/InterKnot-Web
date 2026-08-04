@@ -7,9 +7,9 @@ import top.hzwhzw.iwarticleservice.pojo.DraftArticle;
 import vo.DraftArticleVO;
 
 public interface DraftService extends IService<DraftArticle> {
-    Object createDraftArticle(DraftArticleDTO draftArticle);
+    DraftArticleVO createDraftArticle(DraftArticleDTO draftArticle);
 
-    DraftArticle updateDraftArticle(String draftNo, DraftArticleDTO draftArticle);
+    DraftArticleVO updateDraftArticle(String draftNo, DraftArticleDTO draftArticle);
 
     void publishDraftArticle(String draftNo);
 

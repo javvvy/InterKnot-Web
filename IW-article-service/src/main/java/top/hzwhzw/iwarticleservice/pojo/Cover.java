@@ -17,8 +17,8 @@ public class Cover {
     private Long id;
 
     private String coverNo;
-    private String articleId;
+    private String articleNo;    // 文章或草稿编号
     private String url;
-    private String coverWidth;
-    private String coverHeight;
+    private Integer width;
+    private Integer height;
 }

@@ -1,11 +1,9 @@
 package top.hzwhzw.iwcommentservice.controller;
 
+import dto.CommentDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pojo.Result;
 import top.hzwhzw.iwcommentservice.pojo.Comment;
 import top.hzwhzw.iwcommentservice.service.CommentService;
@@ -28,8 +26,23 @@ public class CommentController {
     @GetMapping("/replyList")
     public Result replyList(@RequestParam(defaultValue = "1") Integer page,
                             @RequestParam(defaultValue = "10") Integer pageSize,
-                            @RequestParam Long commentNo){
+                            @RequestParam String commentNo){
         log.info("获取评论{}的子评论列表", commentNo);
         return Result.success(commentService.replyList(page, pageSize, commentNo));
     }
+    //发表评论
+    @PostMapping
+    public Result create(@RequestBody CommentDTO comment){
+        log.info("发表评论{}", comment);
+        commentService.create(comment);
+        return Result.successMsg("发表评论成功");
+    }
+    //删除评论
+    @DeleteMapping("/{commentNo}")
+    public Result delete(@PathVariable String commentNo){
+        log.info("删除评论{}", commentNo);
+        commentService.deleteComment(commentNo);
+        return Result.successMsg("删除评论成功");
+    }
+
 }

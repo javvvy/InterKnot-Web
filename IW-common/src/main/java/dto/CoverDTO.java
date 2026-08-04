@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CoverDTO {
-    private String fileNo;
+    private String articleNo;
+    private String url;
+    private Integer width;
+    private Integer height;
 }
