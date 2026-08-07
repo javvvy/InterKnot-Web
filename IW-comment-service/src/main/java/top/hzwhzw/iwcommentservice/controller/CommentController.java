@@ -45,12 +45,12 @@ public class CommentController {
         commentService.deleteComment(commentNo);
         return Result.successMsg("删除评论成功");
     }
-    //点赞评论
-    @PostMapping("/like")
-    public Result like(@RequestParam String commentNo){
-        log.info("点赞评论{}", commentNo);
+    //切换点赞状态
+    @PostMapping("/{commentNo}/like")
+    public Result like(@PathVariable String commentNo){
+        log.info("切换点赞评论{}", commentNo);
         commentService.like(commentNo);
-        return Result.successMsg("点赞评论成功");
+        return Result.successMsg("切换点赞成功");
     }
     //批量查询评论点赞状态
     @GetMapping("/batchLike")

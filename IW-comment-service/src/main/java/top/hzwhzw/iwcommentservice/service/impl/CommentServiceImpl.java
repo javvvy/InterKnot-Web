@@ -39,7 +39,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Comment> page = new Page<>(pageNum, pageSize);
         // 2. 调用分页查询方法，传入 Page 对象
-        IPage<Comment> commentPage = commentMapper.selectPage(page,new LambdaQueryWrapper<Comment>().eq(Comment::getArticleNo,articleNo));
+        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getArticleNo, articleNo));
         // 如果为空，直接返回空结果
         if (commentPage.getRecords().isEmpty()) {
             return new Page<>(pageNum, pageSize);
@@ -53,7 +53,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                     UserVO authorVO = userClient.queryUserByUserNo(comment.getAuthorNo());
                     commentVO.setAuthor(authorVO);
                     // 5. 设置点赞状态
-                    if(UserContextHolder.getUserId()!=null){
+                    if (UserContextHolder.getUserId() != null) {
                         commentVO.setIsLiked(liked(UserContextHolder.getUserId(), comment.getCommentNo()));
                     }
                     // 6. 设置最后回复
@@ -63,11 +63,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                             .orderByDesc(Comment::getCreatedAt)
                             // 限制只取第一条，提高查询效率
                             .last("limit 1"));
-                    if(lastReply!=null){
+                    if (lastReply != null) {
                         CommentVO lastReplyVO = new CommentVO();
                         BeanUtils.copyProperties(lastReply, lastReplyVO);
                         // 7. 设置最后回复的点赞状态
-                        if(UserContextHolder.getUserId()!=null){
+                        if (UserContextHolder.getUserId() != null) {
                             lastReplyVO.setIsLiked(liked(UserContextHolder.getUserId(), lastReply.getCommentNo()));
                         }
                         // 8. 设置最后回复的作者
@@ -88,12 +88,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 7. 返回组装后的 CommentVO 对象
         return commentVOPage;
     }
+
     @Override
     public IPage<CommentVO> replyList(Integer pageNum, Integer pageSize, String commentNo) {
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Comment> page = new Page<>(pageNum, pageSize);
         // 2. 调用分页查询方法，传入 Page 对象
-        IPage<Comment> commentPage = commentMapper.selectPage(page,new LambdaQueryWrapper<Comment>().eq(Comment::getReplyTo,commentNo));
+        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getReplyTo, commentNo));
         // 如果为空，直接返回空结果
         if (commentPage.getRecords().isEmpty()) {
             return new Page<>(pageNum, pageSize);
@@ -106,7 +107,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             UserVO authorVO = userClient.queryUserByUserNo(reply.getAuthorNo());
             replyVO.setAuthor(authorVO);
             // 5. 设置点赞状态
-            if(UserContextHolder.getUserId()!=null){
+            if (UserContextHolder.getUserId() != null) {
                 replyVO.setIsLiked(liked(UserContextHolder.getUserId(), reply.getCommentNo()));
             }
             return replyVO;
@@ -121,6 +122,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 返回组装后的 CommentVO 对象
         return replyVOPage;
     }
+
     @Override
     public void create(CommentDTO comment) {
         Comment commentEntity = new Comment();
@@ -129,39 +131,53 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         commentEntity.setContent(comment.getContent());
         commentEntity.setAuthorNo(userClient.queryUserById(UserContextHolder.getUserId()).getUserNo());
         commentEntity.setCreatedAt(LocalDateTime.now());
-        commentEntity.setCommentNo("comment-"+ IdUtil.getSnowflakeNextIdStr());
-        if(comment.getReplyTo()==null || comment.getReplyTo().isEmpty()){
-        }else {
+        commentEntity.setCommentNo("comment-" + IdUtil.getSnowflakeNextIdStr());
+        if (comment.getReplyTo() == null || comment.getReplyTo().isEmpty()) {
+        } else {
             commentEntity.setReplyTo(comment.getReplyTo());
         }
         commentMapper.insert(commentEntity);
     }
+
     @Override
     public void deleteComment(String commentNo) {
         // 1.鉴权
         Comment comment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
-        if(comment==null){
+        if (comment == null) {
             throw new IllegalArgumentException("评论不存在");
         }
-        if(!comment.getAuthorNo().equals(userClient.queryUserById(UserContextHolder.getUserId()).getUserNo())){
+        if (!comment.getAuthorNo().equals(userClient.queryUserById(UserContextHolder.getUserId()).getUserNo())) {
             throw new IllegalArgumentException("您没有权限删除该评论");
         }
         // 2.删除评论
         commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
     }
+
     @Override
     public void like(String commentNo) {
         // 1.鉴权
         Comment comment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
-        if(comment==null){
+        if (comment == null) {
             throw new IllegalArgumentException("评论不存在");
         }
-        // 2.点赞
-        CommentLikes commentLikes = new CommentLikes();
-        commentLikes.setUserId(UserContextHolder.getUserId());
-        commentLikes.setCommentNo(commentNo);
-        likesMapper.insert(commentLikes);
-    }
+        // 2.切换点赞状态
+        //查询是否点赞过
+        boolean liked = liked(UserContextHolder.getUserId(), commentNo);
+        if (liked) {
+            // 2.1 取消点赞
+            likesMapper.delete(new LambdaQueryWrapper<CommentLikes>()
+                    .eq(CommentLikes::getUserId, UserContextHolder.getUserId())
+                    .eq(CommentLikes::getCommentNo, commentNo));
+        } else {
+            // 2.2 点赞
+            CommentLikes commentLikes = new CommentLikes();
+            commentLikes.setUserId(UserContextHolder.getUserId());
+            commentLikes.setCommentNo(commentNo);
+            likesMapper.insert(commentLikes);
+        }
+       }
+
+
     @Override
     public List<CommentLikesVO> batchLike(CommentLikesDTO commentLikesDTO) {
         // 1. 验证评论是否存在
@@ -169,7 +185,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 new LambdaQueryWrapper<Comment>()
                         .in(Comment::getCommentNo, commentLikesDTO.getCommentNos())
         );
-        if(commentList.isEmpty()){
+        if (commentList.isEmpty()) {
             throw new IllegalArgumentException("评论不存在");
         }
         // 2. 批量查询点赞状态
@@ -183,12 +199,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 .collect(Collectors.toList());
         return commentLikesVOList;
     }
-
-
-
-
-
-
 
 
     /**
