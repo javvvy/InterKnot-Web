@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dto.CommentDTO;
+import dto.CommentLikesDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import top.hzwhzw.iwcommentservice.pojo.Comment;
 import top.hzwhzw.iwcommentservice.pojo.CommentLikes;
 import top.hzwhzw.iwcommentservice.service.CommentService;
 import utils.UserContextHolder;
+import vo.CommentLikesVO;
 import vo.CommentVO;
 import vo.UserVO;
 
@@ -147,6 +149,44 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 2.删除评论
         commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
     }
+    @Override
+    public void like(String commentNo) {
+        // 1.鉴权
+        Comment comment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
+        if(comment==null){
+            throw new IllegalArgumentException("评论不存在");
+        }
+        // 2.点赞
+        CommentLikes commentLikes = new CommentLikes();
+        commentLikes.setUserId(UserContextHolder.getUserId());
+        commentLikes.setCommentNo(commentNo);
+        likesMapper.insert(commentLikes);
+    }
+    @Override
+    public List<CommentLikesVO> batchLike(CommentLikesDTO commentLikesDTO) {
+        // 1. 验证评论是否存在
+        List<Comment> commentList = commentMapper.selectList(
+                new LambdaQueryWrapper<Comment>()
+                        .in(Comment::getCommentNo, commentLikesDTO.getCommentNos())
+        );
+        if(commentList.isEmpty()){
+            throw new IllegalArgumentException("评论不存在");
+        }
+        // 2. 批量查询点赞状态
+        List<CommentLikesVO> commentLikesVOList = commentList.stream()
+                .map(comment -> {
+                    CommentLikesVO commentLikesVO = new CommentLikesVO();
+                    commentLikesVO.setCommentId(comment.getId());
+                    commentLikesVO.setIsLiked(liked(UserContextHolder.getUserId(), comment.getCommentNo()));
+                    return commentLikesVO;
+                })
+                .collect(Collectors.toList());
+        return commentLikesVOList;
+    }
+
+
+
+
 
 
 

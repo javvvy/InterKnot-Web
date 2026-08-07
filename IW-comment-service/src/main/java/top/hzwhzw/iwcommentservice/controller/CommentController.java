@@ -1,6 +1,7 @@
 package top.hzwhzw.iwcommentservice.controller;
 
 import dto.CommentDTO;
+import dto.CommentLikesDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,17 @@ public class CommentController {
         commentService.deleteComment(commentNo);
         return Result.successMsg("删除评论成功");
     }
-
+    //点赞评论
+    @PostMapping("/like")
+    public Result like(@RequestParam String commentNo){
+        log.info("点赞评论{}", commentNo);
+        commentService.like(commentNo);
+        return Result.successMsg("点赞评论成功");
+    }
+    //批量查询评论点赞状态
+    @GetMapping("/batchLike")
+    public Result batchLike(@RequestBody CommentLikesDTO commentLikesDTO){
+        log.info("批量查询评论{}的点赞状态", commentLikesDTO);
+        return Result.success(commentService.batchLike(commentLikesDTO));
+    }
 }
