@@ -1,13 +1,14 @@
-package vo;
+package dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentLikesVO {
-    private String commentNo;
-    private Boolean isLiked;
+public class ArticleLikesDTO {
+    private List<String> articleNos;
 }

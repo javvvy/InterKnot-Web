@@ -53,7 +53,7 @@ public class CommentController {
         return Result.successMsg("切换点赞成功");
     }
     //批量查询评论点赞状态
-    @GetMapping("/batchLike")
+    @GetMapping("/likes")
     public Result batchLike(@RequestBody CommentLikesDTO commentLikesDTO){
         log.info("批量查询评论{}的点赞状态", commentLikesDTO);
         return Result.success(commentService.batchLike(commentLikesDTO));

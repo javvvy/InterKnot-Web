@@ -1,4 +1,4 @@
-package vo;
+package dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,12 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVO {
-    private String userNo;
+public class UserDTO {
     private String nickName;
-    private String avatar;
     private String bio;
-    private Long level;
-    private Long exp;
     private Boolean profileHidden;
 }

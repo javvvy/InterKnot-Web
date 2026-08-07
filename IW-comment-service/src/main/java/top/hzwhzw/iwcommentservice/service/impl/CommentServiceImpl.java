@@ -2,7 +2,6 @@ package top.hzwhzw.iwcommentservice.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import top.hzwhzw.iwapi.client.UserClient;
-import top.hzwhzw.iwcommentservice.interceptor.UserContextInterceptor;
 import top.hzwhzw.iwcommentservice.mapper.CommentMapper;
 import top.hzwhzw.iwcommentservice.mapper.LikesMapper;
 import top.hzwhzw.iwcommentservice.pojo.Comment;
@@ -21,7 +19,7 @@ import top.hzwhzw.iwcommentservice.service.CommentService;
 import utils.UserContextHolder;
 import vo.CommentLikesVO;
 import vo.CommentVO;
-import vo.UserVO;
+import vo.UserVO2;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +48,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                     CommentVO commentVO = new CommentVO();
                     BeanUtils.copyProperties(comment, commentVO);
                     // 4. 组装作者
-                    UserVO authorVO = userClient.queryUserByUserNo(comment.getAuthorNo());
+                    UserVO2 authorVO = userClient.queryUserByUserNo(comment.getAuthorNo());
                     commentVO.setAuthor(authorVO);
                     // 5. 设置点赞状态
                     if (UserContextHolder.getUserId() != null) {
@@ -71,7 +69,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                             lastReplyVO.setIsLiked(liked(UserContextHolder.getUserId(), lastReply.getCommentNo()));
                         }
                         // 8. 设置最后回复的作者
-                        UserVO lastReplyAuthorVO = userClient.queryUserByUserNo(lastReply.getAuthorNo());
+                        UserVO2 lastReplyAuthorVO = userClient.queryUserByUserNo(lastReply.getAuthorNo());
                         lastReplyVO.setAuthor(lastReplyAuthorVO);
                         commentVO.setLastReply(lastReplyVO);
                     }
@@ -104,7 +102,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             CommentVO replyVO = new CommentVO();
             BeanUtils.copyProperties(reply, replyVO);
             // 4. 组装作者
-            UserVO authorVO = userClient.queryUserByUserNo(reply.getAuthorNo());
+            UserVO2 authorVO = userClient.queryUserByUserNo(reply.getAuthorNo());
             replyVO.setAuthor(authorVO);
             // 5. 设置点赞状态
             if (UserContextHolder.getUserId() != null) {
@@ -189,15 +187,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             throw new IllegalArgumentException("评论不存在");
         }
         // 2. 批量查询点赞状态
-        List<CommentLikesVO> commentLikesVOList = commentList.stream()
-                .map(comment -> {
-                    CommentLikesVO commentLikesVO = new CommentLikesVO();
-                    commentLikesVO.setCommentId(comment.getId());
-                    commentLikesVO.setIsLiked(liked(UserContextHolder.getUserId(), comment.getCommentNo()));
-                    return commentLikesVO;
-                })
+        return commentLikesDTO.getCommentNos().stream()
+                .map(commentNo -> new CommentLikesVO(commentNo, liked(UserContextHolder.getUserId(), commentNo)))
                 .collect(Collectors.toList());
-        return commentLikesVOList;
     }
 
 
@@ -205,10 +197,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      * 设置点赞状态
      */
     private boolean liked(Long userId, String commentNo) {
-        return likesMapper.selectCount(
+        return likesMapper.selectOne(
                 new LambdaQueryWrapper<CommentLikes>()
                         .eq(CommentLikes::getUserId, userId)
                         .eq(CommentLikes::getCommentNo, commentNo)
-        ) > 0;
+        ) != null;
     }
 }

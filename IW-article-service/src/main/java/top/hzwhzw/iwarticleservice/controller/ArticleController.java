@@ -1,7 +1,9 @@
 package top.hzwhzw.iwarticleservice.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import dto.ArticleLikesDTO;
 import dto.ReadsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,5 +65,27 @@ public class ArticleController {
             articleService.markReads(readsDTO,userNo);
             return Result.successMsg("标记成功");
         }
+    }
+    //切换点赞状态
+    @PostMapping("/{articleNo}/like")
+    public Result like(@PathVariable String articleNo){
+        log.info("切换文章{}的点赞状态", articleNo);
+        articleService.like(articleNo);
+        return Result.successMsg("切换点赞成功");
+    }
+    //批量查询点赞状态
+    @GetMapping("/likes")
+    public Result likes(@RequestBody ArticleLikesDTO articleLikesDTO){
+        log.info("批量查询文章{}的点赞状态", articleLikesDTO.getArticleNos());
+        return Result.success(articleService.likes(articleLikesDTO));
+    }
+
+    //获取指定用户的文章列表
+    @GetMapping("/profile/{userNo}")
+    public Result userArticles(@PathVariable String userNo,
+                                @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize){
+        log.info("获取用户{}的文章列表,分页参数:{} {}", page, pageSize, userNo);
+        return Result.success(articleService.pageListByUserNo(userNo,page, pageSize));
     }
 }

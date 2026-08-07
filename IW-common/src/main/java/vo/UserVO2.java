@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVO {
+public class UserVO2 {
+    private Long id;
     private String userNo;
     private String nickName;
     private String avatar;
     private String bio;
+    private String role;
     private Long level;
     private Long exp;
     private Boolean profileHidden;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentLikesVO {
-    private String commentNo;
+public class ArticleLikesVO {
+    private String articleNo;
     private Boolean isLiked;
 }

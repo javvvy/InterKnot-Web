@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.hzwhzw.iwuserservice.service.OpenService;
-import vo.UserVO;
+import vo.UserVO2;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class OpenController {
      * 批量查询用户
      */
     @PostMapping("/batchQueryUsers")
-    public List<UserVO> batchQueryUsers(@RequestBody List<Long> userIds) {
+    public List<UserVO2> batchQueryUsers(@RequestBody List<Long> userIds) {
         log.info("batchQueryUsers: {}", userIds);
         return openService.batchQueryUsers(userIds);
     }
@@ -26,7 +26,7 @@ public class OpenController {
      * 根据用户ID查询用户
      */
     @GetMapping("/{id}")
-    public UserVO queryUserById(@PathVariable Long id) {
+    public UserVO2 queryUserById(@PathVariable Long id) {
         log.info("queryUserById: {}", id);
         return openService.queryUserById(id);
     }
@@ -34,7 +34,7 @@ public class OpenController {
      * 根据用户编号查询用户
      */
     @GetMapping("/userNo/{userNo}")
-    public UserVO queryUserByUserNo(@PathVariable String userNo) {
+    public UserVO2 queryUserByUserNo(@PathVariable String userNo) {
         log.info("queryUserByUserNo: {}", userNo);
         return openService.queryUserByUserNo(userNo);
     }

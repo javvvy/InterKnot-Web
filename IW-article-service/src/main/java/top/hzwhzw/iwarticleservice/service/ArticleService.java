@@ -2,6 +2,7 @@ package top.hzwhzw.iwarticleservice.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import dto.ArticleLikesDTO;
 import dto.ReadsDTO;
 import top.hzwhzw.iwarticleservice.pojo.Article;
 import vo.ArticlePageVO;
@@ -22,4 +23,10 @@ public interface ArticleService extends IService<Article> {
     List<ReadsVO> selectReads(ReadsDTO readsDTO,String userNo);
 
     void markReads(ReadsDTO readsDTO, String userNo);
+
+    void like(String articleNo);
+
+    Object likes(ArticleLikesDTO articleLikesDTO);
+
+    IPage<ArticlePageVO> pageListByUserNo(String userNo, Integer page, Integer pageSize);
 }
