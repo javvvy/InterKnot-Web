@@ -18,4 +18,6 @@ public interface DraftService extends IService<DraftArticle> {
     DraftArticleVO getDraftByDraftNo(String draftNo);
 
     void deleteDraftArticle(String draftNo);
+
+    void deleteDraftCover(String draftNo, String coverNo);
 }

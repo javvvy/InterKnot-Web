@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileVO {
+    private Long UID;
     private String userNo;
     private String nickName;
     private String avatar;

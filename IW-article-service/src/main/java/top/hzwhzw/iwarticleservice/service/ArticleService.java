@@ -24,7 +24,7 @@ public interface ArticleService extends IService<Article> {
 
     void markReads(ReadsDTO readsDTO, String userNo);
 
-    void like(String articleNo);
+    Long like(String articleNo);
 
     Object likes(ArticleLikesDTO articleLikesDTO);
 

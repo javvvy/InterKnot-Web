@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/IW-mq-service/pom.xml" />
         <option value="$PROJECT_DIR$/IW-search-service/pom.xml" />
         <option value="$PROJECT_DIR$/IW-user-service/pom.xml" />
+        <option value="$PROJECT_DIR$/IW-chat-service/pom.xml" />
       </list>
     </option>
   </component>

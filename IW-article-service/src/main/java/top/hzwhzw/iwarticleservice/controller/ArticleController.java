@@ -48,14 +48,14 @@ public class ArticleController {
     }
     //删除文章
     @DeleteMapping("/{articleNo}")
-    public Result delete(@PathVariable String articleNo){
+    public Result delete(@PathVariable("articleNo") String articleNo){
         log.info("删除文章{}", articleNo);
         articleService.deleteArticle(articleNo);
         return Result.success();
     }
     //批量操作已读记录
     @PostMapping("/reads")
-    public Result reads(@RequestBody ReadsDTO readsDTO,@RequestParam String userNo){
+    public Result reads(@RequestBody ReadsDTO readsDTO,@RequestParam("userNo") String userNo){
         log.info("批量操作文章{}的已读记录,用户编号:{}", readsDTO.getArticleNos(),userNo);
         if(readsDTO.getMarkAsRead() == null || !readsDTO.getMarkAsRead()) {
             //批量查询已读记录
@@ -68,13 +68,12 @@ public class ArticleController {
     }
     //切换点赞状态
     @PostMapping("/{articleNo}/like")
-    public Result like(@PathVariable String articleNo){
+    public Result like(@PathVariable("articleNo") String articleNo){
         log.info("切换文章{}的点赞状态", articleNo);
-        articleService.like(articleNo);
-        return Result.successMsg("切换点赞成功");
+        return Result.success(articleService.like(articleNo));
     }
     //批量查询点赞状态
-    @GetMapping("/likes")
+    @PostMapping("/likes")
     public Result likes(@RequestBody ArticleLikesDTO articleLikesDTO){
         log.info("批量查询文章{}的点赞状态", articleLikesDTO.getArticleNos());
         return Result.success(articleService.likes(articleLikesDTO));
@@ -82,7 +81,7 @@ public class ArticleController {
 
     //获取指定用户的文章列表
     @GetMapping("/profile/{userNo}")
-    public Result userArticles(@PathVariable String userNo,
+    public Result userArticles(@PathVariable("userNo") String userNo,
                                 @RequestParam(value = "page", defaultValue = "1") Integer page,
                                 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize){
         log.info("获取用户{}的文章列表,分页参数:{} {}", page, pageSize, userNo);

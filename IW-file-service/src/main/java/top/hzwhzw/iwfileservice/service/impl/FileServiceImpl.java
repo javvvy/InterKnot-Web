@@ -1,13 +1,18 @@
 package top.hzwhzw.iwfileservice.service.impl;
 
+import dto.AvatarDTO;
 import dto.CoverDTO;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.hzwhzw.iwapi.client.ArticleClient;
+import top.hzwhzw.iwapi.client.UserClient;
 import top.hzwhzw.iwfileservice.service.FileService;
 import top.hzwhzw.iwfileservice.utils.OssUtil;
+import vo.AvatarVO;
 import vo.CoverVO;
 import vo.FileVO;
 
@@ -23,7 +28,11 @@ public class FileServiceImpl implements FileService {
     private final ArticleClient articleClient;
     @Resource
     private OssUtil ossUtil;
+    @Autowired
+    private UserClient userClient;
+
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
     public FileVO upload(MultipartFile fileMultipartFile, String scene, String no) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(fileMultipartFile.getInputStream());
         if (bufferedImage == null) {
@@ -39,18 +48,13 @@ public class FileServiceImpl implements FileService {
         fileVO.setHeight(bufferedImage.getHeight());
         fileVO.setCreatedAt(LocalDateTime.now());
         if ("avatar".equals(scene)) {
-            //TODO 插入avatar表
-//            Integer userId = CurrentHolder.getCurrentId();
-//            User user = userMapper.selectUserById(userId);
-//            Avatar avatar = new Avatar();
-//            avatar.setDocumentId(Document.setDocumentId());
-//            avatar.setUrl(url);
-//            avatar.setAvatarWidth(bufferedImage.getWidth());
-//            avatar.setAvatarHeight(bufferedImage.getHeight());
-//            avatar.setUserDocumentId(user.getDocumentId());
-//            avatar.setUserId(userId);
-//            fileMapper.insertAvatar(avatar);
-//            imageFileVO.setDocumentId(avatar.getDocumentId());
+            // 插入avatar表
+            AvatarDTO avatar = new AvatarDTO();
+            avatar.setUrl(url);
+            avatar.setWidth(bufferedImage.getWidth());
+            avatar.setHeight(bufferedImage.getHeight());
+            AvatarVO avatarVO = userClient.insertAvatar(avatar);
+            fileVO.setFileNo(avatarVO.getAvatarNo());
         } else if ("cover".equals(scene)) {
             // 插入cover表
             CoverDTO cover = new CoverDTO();

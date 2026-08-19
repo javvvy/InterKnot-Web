@@ -15,11 +15,11 @@ public interface CommentService extends IService<Comment> {
 
     public IPage< CommentVO >replyList(Integer page, Integer pageSize, String commentNo);
 
-    void create(CommentDTO comment);
+    CommentVO create(CommentDTO comment);
 
     void deleteComment(String commentNo);
 
-    void like(String commentNo);
+    Long like(String commentNo);
 
     List<CommentLikesVO> batchLike(CommentLikesDTO commentLikesDTO);
 }

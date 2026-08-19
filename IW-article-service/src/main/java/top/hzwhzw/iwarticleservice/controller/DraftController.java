@@ -24,38 +24,45 @@ public class DraftController {
     }
     //更新文章草稿
     @PutMapping("/{draftNo}")
-    public Result update(@PathVariable String draftNo,@RequestBody DraftArticleDTO draftArticle){
+    public Result update(@PathVariable("draftNo") String draftNo,@RequestBody DraftArticleDTO draftArticle){
         log.info("更新文章草稿{}", draftArticle);
         DraftArticleVO updated = draftService.updateDraftArticle(draftNo,draftArticle);
         return Result.success(updated);
     }
     //发布文章草稿
     @PostMapping("/{draftNo}/publish")
-    public Result publish(@PathVariable String draftNo){
+    public Result publish(@PathVariable("draftNo") String draftNo){
         log.info("发布文章草稿{}", draftNo);
         draftService.publishDraftArticle(draftNo);
         return Result.successMsg("发布成功");
     }
     //获取我的文章列表
     @GetMapping("/my")
-    public Result myArticles(@RequestParam(defaultValue = "1") Integer page,
-                             @RequestParam(defaultValue = "10") Integer pageSize){
+    public Result myArticles(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize){
         log.info("获取我的文章列表, page: {}, pageSize: {}", page, pageSize);
         IPage<DraftArticleVO> pageResult = draftService.myArticles(page, pageSize);
         return Result.success(pageResult);
     }
     //获取草稿详情
     @GetMapping("/my/{draftNo}")
-    public Result draftDetail(@PathVariable String draftNo){
+    public Result draftDetail(@PathVariable("draftNo") String draftNo){
         log.info("获取草稿{}详情", draftNo);
         DraftArticleVO draft = draftService.getDraftByDraftNo(draftNo);
         return Result.success(draft);
     }
     //删除草稿
     @DeleteMapping("/my/draft/{draftNo}")
-    public Result deleteDraft(@PathVariable String draftNo){
+    public Result deleteDraft(@PathVariable("draftNo") String draftNo){
         log.info("删除草稿{}", draftNo);
         draftService.deleteDraftArticle(draftNo);
         return Result.successMsg("删除成功");
+    }
+    //删除草稿封面
+    @DeleteMapping("/my/draft/{draftNo}/cover")
+    public Result deleteDraftCover(@PathVariable("draftNo") String draftNo,@RequestParam("coverNo") String coverNo) {
+        log.info("删除草稿{}封面{}成功", draftNo,coverNo);
+        draftService.deleteDraftCover(draftNo,coverNo);
+        return Result.successMsg("删除封面成功");
     }
 }

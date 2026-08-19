@@ -25,4 +25,5 @@ public class ArticleVO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserVO author;
+    private Boolean isLiked;
 }

@@ -95,6 +95,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         avatarMapper.update(new LambdaUpdateWrapper<Avatar>()
                 .set(Avatar::getEquipped, true)
                 .eq(Avatar::getAvatarNo, avatarNo));
+        //修改用户表中的avatar字段
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .set(User::getAvatar, avatar.getUrl())
+                .eq(User::getId, UserContextHolder.getUserId()));
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -112,8 +116,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         ProfileVO profileVO = new ProfileVO();
         BeanUtil.copyProperties(user, profileVO);
+        profileVO.setUID(user.getId()+100000);
         Card card = cardMapper.selectOne(new LambdaQueryWrapper<Card>()
-                .eq(Card::getUserId, UserContextHolder.getUserId())
+                .eq(Card::getUserId, user.getId())
                 .eq(Card::getEquipped, true));
         if(card != null){
             CardVO cardVO = new CardVO();

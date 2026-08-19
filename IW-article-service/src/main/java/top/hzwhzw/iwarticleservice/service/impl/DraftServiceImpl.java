@@ -177,5 +177,15 @@ public class DraftServiceImpl extends ServiceImpl<DraftMapper, DraftArticle> imp
             throw new IllegalArgumentException("没有权限删除该草稿");
         }
         draftMapper.deleteById(draft.getId());
+        // 删除封面
+        coverMapper.delete(new LambdaQueryWrapper<Cover>()
+                .eq(Cover::getArticleNo, draftNo));
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteDraftCover(String draftNo, String coverNo) {
+        coverMapper.delete(new LambdaQueryWrapper<Cover>()
+                .eq(Cover::getCoverNo, coverNo)
+                .eq(Cover::getArticleNo, draftNo));
     }
 }

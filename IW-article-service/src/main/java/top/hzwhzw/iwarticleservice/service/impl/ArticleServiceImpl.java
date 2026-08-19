@@ -7,9 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dto.ArticleLikesDTO;
 import dto.ReadsDTO;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.hzwhzw.iwapi.client.CommentClient;
 import top.hzwhzw.iwapi.client.UserClient;
 import top.hzwhzw.iwarticleservice.mapper.ArticleMapper;
 import top.hzwhzw.iwarticleservice.mapper.CoverMapper;
@@ -37,12 +40,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private final ReadsMapper readsMapper;
     private final LikesMapper likesMapper;
     private final UserClient userClient;
+    private final CommentClient commentClient;
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
     public IPage<ArticlePageVO> pageList(Integer pageNum, Integer pageSize) {
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Article> page = new Page<>(pageNum, pageSize);
         // 2. 调用分页查询方法，传入 Page 对象
-        IPage<Article> articlePage = articleMapper.selectPage(page,null);
+        IPage<Article> articlePage = articleMapper.selectPage(page,new LambdaQueryWrapper<Article>().orderByDesc(Article::getCreatedAt));
         // 如果当前页没有数据，直接返回空结果
         if (articlePage.getRecords().isEmpty()) {
             return new Page<>(pageNum, pageSize);
@@ -102,6 +107,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
     public ArticleVO detail(String articleNo) {
         Article article = articleMapper.selectOne(
                 new LambdaQueryWrapper<Article>().eq(Article::getArticleNo, articleNo)
@@ -130,6 +136,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             BeanUtils.copyProperties(userVO2, user);
             articleVO.setAuthor(user);
         }
+        // 4. 查询点赞状态
+        if(UserContextHolder.getUserId() != null){
+            ArticleLikes articleLikes = likesMapper.selectOne(
+                    new LambdaQueryWrapper<ArticleLikes>()
+                            .eq(ArticleLikes::getArticleNo, articleNo)
+                            .eq(ArticleLikes::getUserId, UserContextHolder.getUserId())
+            );
+            articleVO.setIsLiked(articleLikes != null);
+        }
         return articleVO;
     }
     @Override
@@ -141,17 +156,28 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         );
     }
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void deleteArticle(String articleNo) {
         Article article = articleMapper.selectOne(
                 new LambdaQueryWrapper<Article>().eq(Article::getArticleNo, articleNo)
         );
+        if(article == null){
+            throw new IllegalArgumentException("文章不存在");
+        }
         //TODO 鉴权
-        if(!article.getAuthorId().toString().equals(UserContextHolder.getUserId())){
+        if(!article.getAuthorId().equals(UserContextHolder.getUserId())){
             throw new IllegalArgumentException("您没有权限删除该文章");
         }
         articleMapper.delete(
                 new LambdaQueryWrapper<Article>().eq(Article::getArticleNo, articleNo)
         );
+        // 2.删除封面
+        coverMapper.delete(new LambdaQueryWrapper<Cover>().eq(Cover::getArticleNo, articleNo));
+        // 3.删除点赞
+        likesMapper.delete(new LambdaQueryWrapper<ArticleLikes>().eq(ArticleLikes::getArticleNo, articleNo));
+        // 4.删除评论
+        commentClient.deleteComment(articleNo);
     }
     @Override
     public List<ReadsVO> selectReads(ReadsDTO readsDTO,String userNo) {
@@ -192,7 +218,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         readsMapper.insertBatchSomeColumn(readsList);
     }
     @Override
-    public void like(String articleNo) {
+    public Long like(String articleNo) {
         // 1. 查询是否点赞过
         boolean liked = liked(UserContextHolder.getUserId(), articleNo);
         if (liked) {
@@ -200,13 +226,28 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             likesMapper.delete(new LambdaQueryWrapper<ArticleLikes>()
                     .eq(ArticleLikes::getUserId, UserContextHolder.getUserId())
                     .eq(ArticleLikes::getArticleNo, articleNo));
+            // 3. 更新文章点赞数
+            articleMapper.update(null,
+                    Wrappers.<Article>lambdaUpdate()
+                            .eq(Article::getArticleNo, articleNo)
+                            .setSql("likes_count = likes_count - 1")
+            );
         } else {
             // 2. 点赞
             ArticleLikes articleLikes = new ArticleLikes();
             articleLikes.setUserId(UserContextHolder.getUserId());
             articleLikes.setArticleNo(articleNo);
             likesMapper.insert(articleLikes);
+            // 3. 更新文章点赞数
+            articleMapper.update(null,
+                    Wrappers.<Article>lambdaUpdate()
+                            .eq(Article::getArticleNo, articleNo)
+                            .setSql("likes_count = likes_count + 1")
+            );
         }
+        return articleMapper.selectOne(
+                new LambdaQueryWrapper<Article>().eq(Article::getArticleNo, articleNo)
+        ).getLikesCount();
     }
     @Override
     public List<ArticleLikesVO> likes(ArticleLikesDTO articleLikesDTO) {
@@ -218,6 +259,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .collect(Collectors.toList());
     }
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
     public IPage<ArticlePageVO> pageListByUserNo(String userNo, Integer pageNum, Integer pageSize) {
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Article> page = new Page<>(pageNum, pageSize);
@@ -228,7 +270,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         // 2. 调用分页查询方法，传入 Page 对象
         IPage<Article> articlePage = articleMapper.selectPage(page,new LambdaQueryWrapper<Article>()
-                .eq(Article::getAuthorId, UserContextHolder.getUserId())
+                .eq(Article::getAuthorId, userVO2.getId())
                 .orderByDesc(Article::getCreatedAt)
         );
         // 如果当前页没有数据，直接返回空结果

@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: interknot-chat
+
+  cloud:
+    nacos:
+      discovery:                    # 注意：这里需要显式指定 discovery 节点
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+        # enabled: true             # 默认就是true，可以不写
+
+      config:                       # config 是独立的配置节点
+        server-addr: localhost:8848 # config 也需要指定地址（通常与discovery相同）
+        username: nacos
+        password: nacos
+        file-extension: yaml        # 注意这里不要换行

@@ -17,17 +17,17 @@ public class CommentController {
     private final CommentService commentService;
     // 获取文章的评论列表
     @GetMapping("/list")
-    public Result list(@RequestParam(defaultValue = "1") Integer page,
-                       @RequestParam(defaultValue = "20") Integer pageSize,
-                       @RequestParam String articleNo){
+    public Result list(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize,
+                       @RequestParam("articleNo") String articleNo){
         log.info("获取文章{}的评论列表", articleNo);
         return Result.success(commentService.list(page, pageSize, articleNo));
     }
     // 获取评论的子评论列表
     @GetMapping("/replyList")
-    public Result replyList(@RequestParam(defaultValue = "1") Integer page,
-                            @RequestParam(defaultValue = "10") Integer pageSize,
-                            @RequestParam String commentNo){
+    public Result replyList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+                            @RequestParam("commentNo") String commentNo){
         log.info("获取评论{}的子评论列表", commentNo);
         return Result.success(commentService.replyList(page, pageSize, commentNo));
     }
@@ -35,25 +35,23 @@ public class CommentController {
     @PostMapping
     public Result create(@RequestBody CommentDTO comment){
         log.info("发表评论{}", comment);
-        commentService.create(comment);
-        return Result.successMsg("发表评论成功");
+        return Result.success(commentService.create(comment));
     }
     //删除评论
     @DeleteMapping("/{commentNo}")
-    public Result delete(@PathVariable String commentNo){
+    public Result delete(@PathVariable("commentNo") String commentNo){
         log.info("删除评论{}", commentNo);
         commentService.deleteComment(commentNo);
         return Result.successMsg("删除评论成功");
     }
     //切换点赞状态
     @PostMapping("/{commentNo}/like")
-    public Result like(@PathVariable String commentNo){
+    public Result like(@PathVariable("commentNo") String commentNo){
         log.info("切换点赞评论{}", commentNo);
-        commentService.like(commentNo);
-        return Result.successMsg("切换点赞成功");
+        return Result.success(commentService.like(commentNo));
     }
     //批量查询评论点赞状态
-    @GetMapping("/likes")
+    @PostMapping("/likes")
     public Result batchLike(@RequestBody CommentLikesDTO commentLikesDTO){
         log.info("批量查询评论{}的点赞状态", commentLikesDTO);
         return Result.success(commentService.batchLike(commentLikesDTO));

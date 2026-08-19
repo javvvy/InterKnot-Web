@@ -3,6 +3,7 @@ package top.hzwhzw.iwcommentservice.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dto.CommentDTO;
@@ -10,6 +11,7 @@ import dto.CommentLikesDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.hzwhzw.iwapi.client.UserClient;
 import top.hzwhzw.iwcommentservice.mapper.CommentMapper;
 import top.hzwhzw.iwcommentservice.mapper.LikesMapper;
@@ -37,7 +39,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Comment> page = new Page<>(pageNum, pageSize);
         // 2. 调用分页查询方法，传入 Page 对象
-        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getArticleNo, articleNo));
+        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getArticleNo, articleNo).orderByDesc(Comment::getCreatedAt));
         // 如果为空，直接返回空结果
         if (commentPage.getRecords().isEmpty()) {
             return new Page<>(pageNum, pageSize);
@@ -92,7 +94,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 1. 创建 Page 对象，传入当前页和每页条数
         Page<Comment> page = new Page<>(pageNum, pageSize);
         // 2. 调用分页查询方法，传入 Page 对象
-        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getReplyTo, commentNo));
+        IPage<Comment> commentPage = commentMapper.selectPage(page, new LambdaQueryWrapper<Comment>().eq(Comment::getReplyTo, commentNo).orderByDesc(Comment::getCreatedAt));
         // 如果为空，直接返回空结果
         if (commentPage.getRecords().isEmpty()) {
             return new Page<>(pageNum, pageSize);
@@ -122,7 +124,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public void create(CommentDTO comment) {
+    public CommentVO create(CommentDTO comment) {
         Comment commentEntity = new Comment();
         //TODO 枚举类处理
         commentEntity.setArticleNo(comment.getArticleNo());
@@ -135,9 +137,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             commentEntity.setReplyTo(comment.getReplyTo());
         }
         commentMapper.insert(commentEntity);
+        CommentVO commentVO = new CommentVO();
+        BeanUtils.copyProperties(commentEntity, commentVO);
+        return commentVO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteComment(String commentNo) {
         // 1.鉴权
         Comment comment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
@@ -149,10 +155,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
         // 2.删除评论
         commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
+        // 3.删除子评论
+        commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getReplyTo, commentNo));
+        // 4.删除点赞
+        likesMapper.delete(new LambdaQueryWrapper<CommentLikes>()
+                .eq(CommentLikes::getCommentNo, commentNo));
     }
 
     @Override
-    public void like(String commentNo) {
+    public Long like(String commentNo) {
         // 1.鉴权
         Comment comment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo));
         if (comment == null) {
@@ -166,13 +177,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             likesMapper.delete(new LambdaQueryWrapper<CommentLikes>()
                     .eq(CommentLikes::getUserId, UserContextHolder.getUserId())
                     .eq(CommentLikes::getCommentNo, commentNo));
+            // 3. 更新评论点赞数
+            commentMapper.update(null,
+                    Wrappers.<Comment>lambdaUpdate()
+                            .eq(Comment::getCommentNo, commentNo)
+                            .setSql("like_count = like_count - 1")
+            );
         } else {
             // 2.2 点赞
             CommentLikes commentLikes = new CommentLikes();
             commentLikes.setUserId(UserContextHolder.getUserId());
             commentLikes.setCommentNo(commentNo);
             likesMapper.insert(commentLikes);
+            // 3. 更新评论点赞数
+            commentMapper.update(null,
+                    Wrappers.<Comment>lambdaUpdate()
+                            .eq(Comment::getCommentNo, commentNo)
+                            .setSql("like_count = like_count + 1")
+            );
         }
+        return commentMapper.selectOne(
+                new LambdaQueryWrapper<Comment>().eq(Comment::getCommentNo, commentNo)
+        ).getLikeCount();
        }
 
 

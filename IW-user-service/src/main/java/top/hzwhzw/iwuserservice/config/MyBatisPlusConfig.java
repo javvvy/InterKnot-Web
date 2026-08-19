@@ -18,21 +18,22 @@ public class MyBatisPlusConfig {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 添加分页插件，并指定你的数据库类型（如 MySQL, Oracle, PostgreSQL 等）
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
     }
-    // 批量插入方法注入器
+
     @Bean
-    public DefaultSqlInjector insertBatchSqlInjector() {
-        return new DefaultSqlInjector() {
-            @Override
-            public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
-                // 注意：这里变成了2个参数
-                List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
-                methodList.add(new InsertBatchSomeColumn());
-                return methodList;
-            }
-        };
+    public MybatisPlusSqlInjector mybatisPlusSqlInjector() {
+        return new MybatisPlusSqlInjector();
+    }
+
+    // 内部类实现自定义注入器
+    public static class MybatisPlusSqlInjector extends DefaultSqlInjector {
+        @Override
+        public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
+            List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
+            methodList.add(new InsertBatchSomeColumn());
+            return methodList;
+        }
     }
 }

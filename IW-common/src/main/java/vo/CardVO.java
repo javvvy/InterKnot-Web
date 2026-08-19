@@ -13,6 +13,7 @@ public class CardVO {
     private String description;
     private String type;
     private Boolean equipped;
+    private String url;
     private Integer width;
     private Integer height;
 }

@@ -28,7 +28,7 @@ public class UserController {
     }
     // 装备名片
     @PostMapping("/cards/equip")
-    public Result equipCard(@RequestParam String cardNo){
+    public Result equipCard(@RequestParam("cardNo") String cardNo){
         log.info("装备名片: {}", cardNo);
         userService.equipCard(cardNo);
         return Result.successMsg("装备成功");
@@ -41,7 +41,7 @@ public class UserController {
     }
     // 装备头像
     @PostMapping("/avatars/equip")
-    public Result equipAvatar(@RequestParam String avatarNo){
+    public Result equipAvatar(@RequestParam("avatarNo") String avatarNo){
         log.info("装备头像: {}", avatarNo);
         userService.equipAvatar(avatarNo);
         return Result.successMsg("装备成功");
@@ -55,7 +55,7 @@ public class UserController {
     }
     //获取指定用户资料
     @GetMapping("/profile/{userNo}")
-    public Result getProfile(@PathVariable String userNo){
+    public Result getProfile(@PathVariable("userNo") String userNo){
         log.info("获取用户资料: {}", userNo);
         return Result.success(userService.getProfileByNo(userNo));
     }
