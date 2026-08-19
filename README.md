@@ -245,7 +245,11 @@ mvn spring-boot:run -pl IW-gateway
 
 ## 注意事项
 
-- `application.yaml` 中的数据库账号密码（`root/573586`）等为本地开发默认配置，生产环境务必迁移至 Nacos 配置中心或环境变量，避免硬编码泄露
 - `IW-mq-service` 与 `IW-search-service` 目前为基础框架，业务功能尚未实现
 - 根目录下的 `hs_err_pid24480.log` 为 JVM 崩溃日志，可忽略或删除
 - 各子模块 `pom.xml` 中声明的 `java.version` 为 17，父工程为 18，实际以本地 JDK 版本为准
+
+## 致谢
+
+- 感谢来自[KawaYiLab](https://github.com/KawaYiLab/InterKnot-Web)的前端源码,本项目的前端借鉴了其相关源码
+- 本项目由我独自完成,制作不易,能否点个star,感激不尽
